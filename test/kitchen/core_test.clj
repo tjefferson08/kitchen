@@ -12,9 +12,20 @@
       (d/transact conn schema)
       conn)))
 
-(deftest a-test
+(deftest test-find-one-pet-owner
   (is (= #{["John"]}
          (do
            (with-redefs [conn (create-test-db)]
              (add-pet-owner "John")
              (find-all-pet-owners))))))
+
+(deftest test-find-pets-for-owner
+  (is (= #{["Velma"] ["Daphne"]}
+         (do
+           (with-redefs [conn (create-test-db)]
+             (add-pet-owner "John")
+             (add-pet-owner "Paul")
+             (add-pet "Velma" "Paul")
+             (add-pet "Daphne" "Paul")
+             (add-pet "Barney" "John")
+             (find-pets-for-owner "Paul"))))))
