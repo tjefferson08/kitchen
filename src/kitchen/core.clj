@@ -1,7 +1,10 @@
 (ns kitchen.core
   (:require [datomic.api :as d]))
 
-(def conn nil)
+(def db-uri "datomic:free://localhost:4334/pet-owners-db")
+
+(def conn
+  (d/connect db-uri))
 
 (defn add-pet-owner [owner-name]
   @(d/transact conn [{:db/id (d/tempid :db.part/user)
