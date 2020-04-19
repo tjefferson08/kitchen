@@ -9,4 +9,13 @@
  {:db/ident :owner/pets
   :db/valueType :db.type/ref
   :db/cardinality :db.cardinality/many
-  :db/doc "An owner's pets"}]
+  :db/doc "An owner's pets"}
+
+ {:db/ident :recipe/name
+  :db/valueType :db.type/string
+  :db/cardinality :db.cardinality/one
+  :db/doc "A name for a recipe"}
+ {:db/ident :recipe/image-url
+  :db/valueType :db.type/string
+  :db/cardinality :db.cardinality/one
+  :db/doc "An image URL for a recipe"}]

@@ -1,5 +1,6 @@
 (ns kitchen.recipe
   (:require [net.cgrand.enlive-html :as html]
+            [datomic.api :as d]
             [clojure.spec.alpha :as s]))
 
 (s/def ::name non-empty-string?)
@@ -82,6 +83,11 @@
       ::ingredients (ingredients html-resource)
       ::instructions (instructions html-resource)}
      (s/conform ::recipe))))
+
+(defn create-tx-data [url]
+  (let [recipe (url->recipe url)]
+    [{:db/id (d/tempid :db.part/user)
+      :recipe/name (::name recipe)}]))
 
 (defn non-empty-string? [s]
   (and (string? s) (not-empty s)))
