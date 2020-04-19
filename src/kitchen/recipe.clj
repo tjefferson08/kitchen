@@ -1,5 +1,18 @@
 (ns kitchen.recipe
-  (:require [net.cgrand.enlive-html :as html]))
+  (:require [net.cgrand.enlive-html :as html]
+            [clojure.spec.alpha :as s]))
+
+(s/def ::name non-empty-string?)
+(s/def ::ingredients (s/coll-of non-empty-string? :min-count 1))
+(s/def ::instructions (s/coll-of non-empty-string? :min-count 1))
+(s/def ::prep-time non-empty-string?)
+(s/def ::cook-time non-empty-string?)
+(s/def ::total-time non-empty-string?)
+(s/def ::image-url non-empty-string?)
+
+(s/def ::recipe
+  (s/keys :req [::name ::ingredients ::instructions]
+          :opt [::cook-time ::prep-time ::total-time ::image-url]))
 
 (def url "https://www.allrecipes.com/recipe/165190/spicy-vegan-potato-curry/")
 
@@ -60,10 +73,15 @@
 
 (defn url->recipe [url]
   (let [html-resource (fetch-url url)]
-    {:name (first (names html-resource))
-     :image-url (first (image-urls html-resource))
-     :cook-time (first (cook-times html-resource))
-     :prep-time (first (prep-times html-resource))
-     :total-time (first (total-times html-resource))
-     :ingredients (ingredients html-resource)
-     :instructions (instructions html-resource)}))
+    (->>
+     {::name (first (names html-resource))
+      ::image-url (first (image-urls html-resource))
+      ::cook-time (first (cook-times html-resource))
+      ::prep-time (first (prep-times html-resource))
+      ::total-time (first (total-times html-resource))
+      ::ingredients (ingredients html-resource)
+      ::instructions (instructions html-resource)}
+     (s/conform ::recipe))))
+
+(defn non-empty-string? [s]
+  (and (string? s) (not-empty s)))
