@@ -85,9 +85,21 @@
      (s/conform ::recipe))))
 
 (defn create-tx-data [url]
-  (let [recipe (url->recipe url)]
-    [{:db/id (d/tempid :db.part/user)
-      :recipe/name (::name recipe)}]))
+  (let [recipe (url->recipe url)
+        recipe-id (d/tempid :db.part/user)]
+    (concat
+     [{:db/id recipe-id
+       :recipe/name (::name recipe)}]
+     (flatten (map
+               (fn [ing]
+                 (let [ing-id (d/tempid :db.part/user)]
+                   [{:db/id recipe-id
+                     :recipe/ingredients ing-id}
+                    {:db/id ing-id
+                     :ingredient/text ing}]))
+               (::ingredients recipe)
+               )))))
+
 
 (defn non-empty-string? [s]
   (and (string? s) (not-empty s)))

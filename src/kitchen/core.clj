@@ -51,7 +51,22 @@
 (defn add-recipe-by-url [url]
   @(d/transact conn (recipe/create-tx-data url)))
 
+(defn find-all-ingredients []
+  (d/q '[:find ?eid
+         :where
+         [?eid :ingredient/text ?ing-text]]
+       (d/db conn)))
+
+(defn find-all-joins []
+  (d/q '[:find ?eid
+         :where
+         [?eid :recipe/ingredients _]]
+       (d/db conn)))
+
 (defn find-all-recipes []
-  (d/q '[:find [?eid ?name]
-         :where [?eid :recipe/name ?name]]
+  (d/q '[:find ?rid ?recipe-name ?ing-id ?ing-text
+         :where
+         [?rid :recipe/name ?recipe-name]
+         [?rid :recipe/ingredients ?ing-id]
+         [?ing-id :ingredient/text ?ing-text]]
        (d/db conn)))
