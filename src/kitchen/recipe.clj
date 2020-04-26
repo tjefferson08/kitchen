@@ -3,6 +3,9 @@
             [datomic.api :as d]
             [clojure.spec.alpha :as s]))
 
+(defn non-empty-string? [s]
+  (and (string? s) (not-empty s)))
+
 (s/def ::name non-empty-string?)
 (s/def ::ingredients (s/coll-of non-empty-string? :min-count 1))
 (s/def ::instructions (s/coll-of non-empty-string? :min-count 1))
@@ -99,7 +102,3 @@
                      :ingredient/text ing}]))
                (::ingredients recipe)
                )))))
-
-
-(defn non-empty-string? [s]
-  (and (string? s) (not-empty s)))
