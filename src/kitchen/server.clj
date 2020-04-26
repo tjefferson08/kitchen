@@ -5,7 +5,7 @@
             [io.pedestal.http.route :as route]
             [io.pedestal.http.content-negotiation :as conneg]))
 
-(defonce database (atom {}))
+(defonce database (atom []))
 
 (def db-interceptor
   {:name :database-interceptor
@@ -13,11 +13,11 @@
             ;; context.request.database = @database
             (update context :request assoc :database @database))
    :leave (fn [context]
-            (if-let [[op & args] (:tx-data context)]
+            (if-let [tx (:tx-data context)]
               (do
                 ;; if someone has attached tx-data, "run the transaction" here
                 ;; and attach the new db value
-                (apply swap! database op args)
+                (apply swap! database conj tx)
                 (assoc-in context [:request :database] @database))
               context))})
 
