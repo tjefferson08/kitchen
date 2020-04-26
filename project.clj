@@ -10,6 +10,15 @@
                  [org.clojure/clojurescript "1.10.520"]
                  [org.clojure/core.async  "0.4.500"]
 
+                 ;; UUIDs
+                 [danlentz/clj-uuid "0.1.9"]
+
+                 ;; web service stuff
+                 [io.pedestal/pedestal.service       "0.5.7"]
+                 [io.pedestal/pedestal.service-tools "0.5.7"] ;; Only needed for ns-watching; WAR tooling
+                 [io.pedestal/pedestal.jetty         "0.5.7"]
+                 [io.pedestal/pedestal.route         "0.5.7"]
+
                  ;; HTML parsing
                  [enlive "1.1.6"]
 
