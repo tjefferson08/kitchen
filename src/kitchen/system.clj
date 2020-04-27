@@ -1,4 +1,4 @@
-(ns system
+(ns kitchen.system
   (:require [com.stuartsierra.component :as component]
             ;; TODO: move to dev namespace
             ;; [com.stuartsierra.component.repl :refer [reset set-init start stop system]]
