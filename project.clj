@@ -11,7 +11,7 @@
                  [org.clojure/core.async  "0.4.500"]
 
                  ;; component/lifecycle/config
-                 [com.stuartsierra/component "1.0.0"]
+                 [integrant "0.8.0"]
 
                  ;; UUIDs
                  [danlentz/clj-uuid "0.1.9"]
