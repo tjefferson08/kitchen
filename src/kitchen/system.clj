@@ -14,7 +14,10 @@
     ::http/port 8890
     ::http/join? false
     ::http/type :jetty}
-   ::server {::service-map (ig/ref ::service-map)}})
+   ::server {::service-map (ig/ref ::service-map)}
+   ::kafka-producer {:timeout-ms 2000
+                     :servers "kafka:9092"}})
+                     ;; :servers (:kafka-servers env)}})
 
 (defmethod ig/init-key ::server [_ {::keys [service-map]}]
   (print "starting server")
@@ -24,6 +27,10 @@
 
 (defmethod ig/init-key ::service-map [_ mp]
   (println "init :service-map")
+  mp)
+
+(defmethod ig/init-key ::kafka-producer [_ mp]
+  (println "init ::kafka-producer")
   mp)
 
 (defmethod ig/halt-key! ::server [_ srv]

@@ -22,6 +22,13 @@
                  [io.pedestal/pedestal.jetty         "0.5.7"]
                  [io.pedestal/pedestal.route         "0.5.7"]
 
+                 ;; kafka
+                 [org.apache.kafka/kafka-clients "2.5.0"]
+
+                 ;; fressian data transport
+                 [org.clojure/data.fressian "1.0.0"]
+
+
                  ;; HTML parsing
                  [enlive "1.1.6"]
 
