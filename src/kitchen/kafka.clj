@@ -64,7 +64,7 @@
   (def c (kitchen.system/config-for :dev))
   (def p (construct-producer (:kitchen.system/kafka-producer c)))
   (.send p
-         (ProducerRecord. "test" "sup")
+         (ProducerRecord. "commands" "sup")
          (reify
            Callback
            (^void onCompletion [_ ^RecordMetadata rm ^Exception e]
