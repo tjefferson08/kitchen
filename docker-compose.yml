@@ -12,7 +12,8 @@ services:
   kafka:
     image: confluentinc/cp-kafka:5.5.0
     ports:
-      - "9092:9092"
+      - 9092:9092
+      - 19092:19092 # not something our clients would normally access, but making available to host for debugging
     environment:
       KAFKA_ADVERTISED_LISTENERS: LISTENER_DOCKER_INTERNAL://kafka:19092,LISTENER_DOCKER_EXTERNAL://${DOCKER_HOST_IP:-127.0.0.1}:9092
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: LISTENER_DOCKER_INTERNAL:PLAINTEXT,LISTENER_DOCKER_EXTERNAL:PLAINTEXT
