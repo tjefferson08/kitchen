@@ -1,7 +1,7 @@
 (ns kitchen.kafka
   (:require [clojure.core.async :as a]
             [clojure.data.fressian :as fressian])
-  (:import [org.apache.kafka.clients.producer KafkaProducer ProducerRecord]
+  (:import [org.apache.kafka.clients.producer KafkaProducer ProducerRecord Callback RecordMetadata]
            [org.apache.kafka.common.serialization Deserializer Serializer]
            [java.nio ByteBuffer]))
 
@@ -62,5 +62,11 @@
 
 (comment
   (def c (kitchen.system/config-for :dev))
-  (construct-producer (:kitchen.system/kafka-producer c))
+  (def p (construct-producer (:kitchen.system/kafka-producer c)))
+  (.send p
+         (ProducerRecord. "test" "sup")
+         (reify
+           Callback
+           (^void onCompletion [_ ^RecordMetadata rm ^Exception e]
+             (println "complete " rm e))))
   (println "sup"))

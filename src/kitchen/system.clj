@@ -16,7 +16,7 @@
     ::http/type :jetty}
    ::server {::service-map (ig/ref ::service-map)}
    ::kafka-producer {:timeout-ms 2000
-                     :servers "127.0.0.1:9092"}})
+                     :servers "0.0.0.0:9092"}})
                      ;; :servers (:kafka-servers env)}})
 
 (defmethod ig/init-key ::server [_ {::keys [service-map]}]
