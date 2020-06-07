@@ -1,0 +1,42 @@
+{:deps {org.clojure/clojure {:mvn/version "1.10.1"}
+        org.clojure/clojurescript {:mvn/version "1.10.339"}
+        org.clojure/core.async {:mvn/version "1.2.603"}
+
+        ;; component/lifecycle/config
+        integrant {:mvn/version "0.8.0"}
+
+        ;; UUIDs
+        danlentz/clj-uuid {:mvn/version "0.1.9"}
+
+        ;; web service stuff
+        io.pedestal/pedestal.service {:mvn/version "0.5.7"}
+        io.pedestal/pedestal.service-tools {:mvn/version"0.5.7"} ;; Only needed for ns-watching; WAR tooling
+        io.pedestal/pedestal.jetty         {:mvn/version "0.5.7"}
+        io.pedestal/pedestal.route         {:mvn/version  "0.5.7"}
+
+        reagent {:mvn/version "1.0.0-alpha2"}
+
+        ;; kafka
+        org.apache.kafka/kafka-clients {:mvn/version "2.5.0"}
+
+        ;; fressian data transport
+        org.clojure/data.fressian{:mvn/version  "1.0.0"}
+
+
+        ;; HTML parsing
+        enlive{:mvn/version  "1.1.6"}
+
+        ;; guava dependency issue, I guess we can just ignore it and it works IDK
+        com.datomic/datomic-free {:mvn/version "0.9.5697"
+                                  :exclusions [com.google.guava/guava]}
+
+        com.bhauman/figwheel-main {:mvn/version "0.2.4"}
+        com.bhauman/rebel-readline-cljs {:mvn/version "0.1.4"}}
+
+ :aliases {:fig  {:main-opts ["-m" "figwheel.main"]}
+           :test {:extra-paths ["test"]
+                  :extra-deps {com.cognitect/test-runner {:git/url "https://github.com/cognitect-labs/test-runner.git"
+                                                          :sha "209b64504cb3bd3b99ecfec7937b358a879f55c1"}}
+                  :main-opts ["-m" "cognitect.test-runner"]}}
+
+ :paths ["src" "resources" "target"]}

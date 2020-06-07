@@ -1,6 +1,6 @@
 (ns kitchen.system-test
-  (:use [clojure.test])
   (:require [kitchen.system :as system]
+            [clojure.test :refer [deftest is]]
             [integrant.core :as ig]
             [io.pedestal.http :as http]
             [io.pedestal.test :refer [response-for]]))

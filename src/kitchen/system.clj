@@ -36,3 +36,10 @@
 (defmethod ig/halt-key! ::server [_ srv]
   (println "halting server")
   (http/stop srv))
+
+(comment
+  (def sys (ig/init (config-for :dev)))
+  (println "success"))
+
+(comment
+  (ig/halt sys))
