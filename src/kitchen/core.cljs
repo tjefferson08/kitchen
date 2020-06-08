@@ -13,8 +13,12 @@
 
 (defonce state (r/atom {}))
 
+(comment
+  (def example-url "https://www.allrecipes.com/recipe/165190/spicy-vegan-potato-curry/"))
+
 ;; Updates come through dedicated channel for actions
 (def action-ch (chan))
+(def ^:const ^:private COMMANDS_URL "http://localhost:8890/commands")
 
 (defn reducer [state action]
   (case (:type action)
@@ -33,19 +37,23 @@
       (js/console.log "next" next)
       (reset! state next))))
 
-(def post-config {:method "POST"
-                  :headers {"Content-Type" "application/json"}})
+;; HTTP stuff with fetch and core.async
+(defn post-config [body]
+  (let [enc-body (js/JSON.stringify (clj->js body))
+        config   {:method "POST" :headers {"Content-Type" "application/json"}}]
+    (clj->js (merge config {:body enc-body}))))
 
 ;; TODO use builtin encoding other than JSON
-(defn fetch [url body]
+(defn POST [url body]
   (go
     (alts! [(timeout 5000)
-            (go (<p! (js/fetch url (clj->js (merge post-config {:body (js/JSON.stringify (clj->js body))})))))])))
+            (go (<p! (js/fetch url (post-config body))))])))
 
+;; Basically a thunk?
 (defn dispatch-fetch [ch url]
   (go
     (>! ch {:type :import})
-    (let [[res _] (<! (fetch "http://localhost:8890/commands" {:url url}))]
+    (let [[res _] (<! (POST COMMANDS_URL {:url url}))]
       (js/console.log res _)
       (cond
         (nil? res) (>! ch {:type :error, :message "Timeout"})
@@ -55,10 +63,7 @@
         :else (>! ch {:type :error, :message "Request error"})))))
 
 (defn app []
-  (let [action {:type :import,
-                ;; :url "https://www.allrecipes.com/recipe/165190/spicy-vegan-potato-curry/"}
-                :url  "http://localhost:8890/commands"}
-        on-click #(dispatch-fetch action-ch (:url @state))]
+  (let [on-click #(dispatch-fetch action-ch (:url @state))]
     [:div
      [:div (str "State: " @state)]
      [:input {:type "text"
