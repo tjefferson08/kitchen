@@ -18,9 +18,10 @@
 
 (defn reducer [state action]
   (case (:type action)
-    :import (assoc state :loading true)
-    :load   (assoc state :loading false :data (:payload action) :error nil)
-    :error  (assoc state :error (:message action) :data nil)
+    :import     (assoc state :loading true)
+    :load       (assoc state :loading false :data (:payload action) :error nil)
+    :error      (assoc state :error (:message action) :data nil)
+    :update-url (assoc state :url (:value action))
     state))
 
 ;; Consume "action" events
@@ -32,19 +33,19 @@
       (js/console.log "next" next)
       (reset! state next))))
 
-(def post-config (js-obj "method" "POST",
-                         "headers" (js-obj "Content-Type" "application/json")))
+(def post-config {:method "POST"
+                  :headers {"Content-Type" "application/json"}})
 
 ;; TODO use builtin encoding other than JSON
-(defn fetch [url]
+(defn fetch [url body]
   (go
     (alts! [(timeout 5000)
-            (go (<p! (js/fetch url post-config)))])))
+            (go (<p! (js/fetch url (clj->js (merge post-config {:body (js/JSON.stringify (clj->js body))})))))])))
 
 (defn dispatch-fetch [ch url]
   (go
     (>! ch {:type :import})
-    (let [[res _] (<! (fetch url))]
+    (let [[res _] (<! (fetch "http://localhost:8890/commands" {:url url}))]
       (js/console.log res _)
       (cond
         (nil? res) (>! ch {:type :error, :message "Timeout"})
@@ -55,12 +56,14 @@
 
 (defn app []
   (let [action {:type :import,
-              ;; :url "https://www.allrecipes.com/recipe/165190/spicy-vegan-potato-curry/"}
+                ;; :url "https://www.allrecipes.com/recipe/165190/spicy-vegan-potato-curry/"}
                 :url  "http://localhost:8890/commands"}
-        on-click #(dispatch-fetch action-ch (:url action))]
+        on-click #(dispatch-fetch action-ch (:url @state))]
     [:div
      [:div (str "State: " @state)]
-     [:input {:type "text"}]
+     [:input {:type "text"
+              :value (:url @state)
+              :on-change #(let [val (.-value (.-target %))] (go (>! action-ch {:type :update-url, :value val})))}]
      [:button {:type "button" :on-click on-click}
       "Import URL"]]))
 
