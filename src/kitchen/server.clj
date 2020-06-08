@@ -20,8 +20,9 @@
               context))})
 
 (defn ok [body]
-  {:status 200 :body body
-   :headers {"Content-Type" "text/html"}})
+  {:status 200
+   :body (json/write-str body)
+   :headers {"Content-Type" "application/json"}})
 
 (def command-create
   {:name :command-create
@@ -30,4 +31,4 @@
                   new-command (commander/create-command command-params)]
               (assoc context
                      ::tx-data [assoc (:id new-command) new-command]
-                     :response (ok "YAY"))))})
+                     :response (ok {:message "YAY"}))))})

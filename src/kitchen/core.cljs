@@ -19,7 +19,8 @@
 (defn reducer [state action]
   (case (:type action)
     :import (assoc state :loading true)
-    :load   (assoc state :loading false :data (:payload action))
+    :load   (assoc state :loading false :data (:payload action) :error nil)
+    :error  (assoc state :error (:message action) :data nil)
     state))
 
 ;; Consume "action" events
@@ -31,25 +32,31 @@
       (js/console.log "next" next)
       (reset! state next))))
 
+(def post-config (js-obj "method" "POST",
+                         "headers" (js-obj "Content-Type" "application/json")))
+
+;; TODO use builtin encoding other than JSON
 (defn fetch [url]
   (go
     (alts! [(timeout 5000)
-            (go (let [p    (<p! (js/fetch url))
-                      json (<p! (.json p))]
-                  json))])))
+            (go (<p! (js/fetch url post-config)))])))
 
 (defn dispatch-fetch [ch url]
   (go
     (>! ch {:type :import})
     (let [[res _] (<! (fetch url))]
-      (if res
-        (>! ch {:type :load, :payload res})
-        (>! ch {:type :error})))))
+      (js/console.log res _)
+      (cond
+        (nil? res) (>! ch {:type :error, :message "Timeout"})
+        (.-ok res) (let [json (<p! (.json res))
+                         payload (js->clj json)]
+                     (>! ch {:type :load, :payload payload}))
+        :else (>! ch {:type :error, :message "Request error"})))))
 
 (defn app []
   (let [action {:type :import,
-                ;; :url "https://www.allrecipes.com/recipe/165190/spicy-vegan-potato-curry/"}
-                :url  "https://jsonplaceholder.typicode.com/todos/1"}
+              ;; :url "https://www.allrecipes.com/recipe/165190/spicy-vegan-potato-curry/"}
+                :url  "http://localhost:8890/commands"}
         on-click #(dispatch-fetch action-ch (:url action))]
     [:div
      [:div (str "State: " @state)]

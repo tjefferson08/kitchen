@@ -11,6 +11,7 @@
   {::service-map
    {::env env
     ::http/routes routes/routes
+    ::http/allowed-origins '("http://localhost:9500")
     ::http/port 8890
     ::http/join? false
     ::http/type :jetty}
@@ -42,4 +43,5 @@
   (println "success"))
 
 (comment
-  (ig/halt sys))
+  (ig/halt! sys)
+  (println "success"))
