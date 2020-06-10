@@ -27,7 +27,7 @@
        (http/start)))
 
 (defmethod ig/init-key ::service-map [_ mp]
-  (println "init :service-map")
+  (println "init :service-map" mp)
   mp)
 
 (defmethod ig/init-key ::kafka-producer [_ mp]
@@ -37,11 +37,3 @@
 (defmethod ig/halt-key! ::server [_ srv]
   (println "halting server")
   (http/stop srv))
-
-(comment
-  (def sys (ig/init (config-for :dev)))
-  (println "success"))
-
-(comment
-  (ig/halt! sys)
-  (println "success"))
