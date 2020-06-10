@@ -21,14 +21,14 @@
 
 (defn ok [body]
   {:status 200
-   :body (json/write-str body)
-   :headers {"Content-Type" "application/json"}})
+   :body body
+   :headers {"Content-Type" "application/edn"}})
 
 (def command-create
   {:name :command-create
    :enter (fn [context]
             (let [command-params (get-in context [:request :query-params :command-params])
                   new-command (commander/create-command command-params)]
+              (println "sup" (get-in context [:request]))
               (assoc context
-                     ::tx-data [assoc (:id new-command) new-command]
                      :response (ok {:message "YAY"}))))})

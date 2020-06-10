@@ -14,6 +14,7 @@
         io.pedestal/pedestal.jetty         {:mvn/version "0.5.7"}
         io.pedestal/pedestal.route         {:mvn/version  "0.5.7"}
 
+        cljs-http {:mvn/version "0.1.46"}
         reagent {:mvn/version "1.0.0-alpha2"}
 
         ;; kafka
@@ -32,6 +33,7 @@
 
         com.bhauman/figwheel-main {:mvn/version "0.2.8"}
         com.bhauman/rebel-readline-cljs {:mvn/version "0.1.4"}}
+        integrant/repl {:mvn/version "0.3.1"}}
 
  :aliases {:fig  {:main-opts ["-m" "figwheel.main"]}
            :test {:extra-paths ["test"]

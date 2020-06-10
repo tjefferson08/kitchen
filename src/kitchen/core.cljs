@@ -2,6 +2,7 @@
   (:require
    [cljs.core.async :refer [go chan <! >! alts! timeout]]
    [cljs.core.async.interop :refer-macros [<p!]]
+   [cljs-http.client :as http]
    [reagent.dom :as rdom]
    [reagent.core :as r]))
 
@@ -37,29 +38,22 @@
       (js/console.log "next" next)
       (reset! state next))))
 
-;; HTTP stuff with fetch and core.async
-(defn post-config [body]
-  (let [enc-body (js/JSON.stringify (clj->js body))
-        config   {:method "POST" :headers {"Content-Type" "application/json"}}]
-    (clj->js (merge config {:body enc-body}))))
-
 ;; TODO use builtin encoding other than JSON
 (defn POST [url body]
   (go
     (alts! [(timeout 5000)
-            (go (<p! (js/fetch url (post-config body))))])))
+            (http/post url {:with-credentials? false
+                            :edn-params body})])))
 
 ;; Basically a thunk?
 (defn dispatch-fetch [ch url]
   (go
     (>! ch {:type :import})
     (let [[res _] (<! (POST COMMANDS_URL {:url url}))]
-      (js/console.log res _)
+      (js/console.log "res" res (:status res))
       (cond
         (nil? res) (>! ch {:type :error, :message "Timeout"})
-        (.-ok res) (let [json (<p! (.json res))
-                         payload (js->clj json)]
-                     (>! ch {:type :load, :payload payload}))
+        (= (:status res 200)) (>! ch {:type :load, :payload (:body res)})
         :else (>! ch {:type :error, :message "Request error"})))))
 
 (defn app []
